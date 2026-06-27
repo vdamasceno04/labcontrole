@@ -1,0 +1,173 @@
+% =============================================================================
+%  Laboratorio de Controle Discreto - Trabalho em equipe
+%  Questao 1 - Grupo: Luiz E. Passoni de Souza / Victor Damasceno Oliveira
+%  Parametros: Ra=2  La=1  Km=0,05  Kb=0,05  J=0,05  b=0,5
+%
+%  Documento completo e autossuficiente: cole TODO este conteudo como main.tex
+%  no Overleaf e compile (pdfLaTeX). Decimais com virgula usam {,}.
+% =============================================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+
+\title{Laborat\'orio de Controle Discreto -- Quest\~ao 1}
+\author{Luiz E. Passoni de Souza \and Victor Damasceno Oliveira}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Quest\~ao 1 -- Fun\c{c}\~ao de Transfer\^encia e Discretiza\c{c}\~ao}
+
+\begin{table}[h]
+\centering
+\caption{Par\^ametros do motor DC (grupo Passoni/Damasceno).}
+\begin{tabular}{lcc}
+\toprule
+Par\^ametro & S\'imbolo & Valor \\
+\midrule
+Resist\^encia de armadura & $R_a$ & $2~\Omega$ \\
+Indut\^ancia de armadura  & $L_a$ & $1~\mathrm{H}$ \\
+Constante de torque       & $K_m$ & $0{,}05~\mathrm{N\cdot m/A}$ \\
+Constante de FCEM         & $K_b$ & $0{,}05~\mathrm{V/(rad/s)}$ \\
+In\'ercia do rotor        & $J$   & $0{,}05~\mathrm{kg\cdot m^2}$ \\
+Atrito viscoso            & $b$   & $0{,}5~\mathrm{N\cdot m\cdot s/rad}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% -----------------------------------------------------------------------------
+\subsection{Item (a) -- FT de malha fechada cont\'inua}
+
+Do diagrama de blocos, a fun\c{c}\~ao de transfer\^encia direta de $V_a$ para $\omega$,
+com a malha interna da FCEM ($K_b$) fechada e $T_d = 0$, \'e:
+\begin{equation}
+G(s)=\frac{K_m}{(L_a s+R_a)(Js+b)+K_mK_b}.
+\end{equation}
+
+Expandindo o denominador:
+\begin{align}
+(L_a s+R_a)(Js+b) &= L_aJ\,s^2+(L_ab+R_aJ)\,s+R_ab \nonumber\\
+                  &= 0{,}05\,s^2+0{,}6\,s+1{,}0 .
+\end{align}
+
+Somando $K_mK_b = 0{,}05\cdot 0{,}05 = 0{,}0025$ e normalizando (dividindo por $0{,}05$):
+\begin{equation}
+G(s)=\frac{0{,}05}{0{,}05\,s^2+0{,}6\,s+1{,}0025}
+     =\boxed{\;\dfrac{1}{s^2+12s+20{,}05}\;}
+\qquad \text{polos: } -2{,}0063,\; -9{,}9937 .
+\end{equation}
+
+Fechando a malha com realimenta\c{c}\~ao unit\'aria ($T_d=0$):
+\begin{equation}
+H(s)=\frac{G(s)}{1+G(s)}=\boxed{\;\dfrac{1}{s^2+12s+21{,}05}\;}.
+\end{equation}
+
+An\'alise dos polos de $H(s)$:
+\begin{align}
+\omega_n &= \sqrt{21{,}05}=4{,}588~\mathrm{rad/s}, \\
+\zeta    &= \frac{12}{2\cdot 4{,}588}=1{,}308 \quad (>1).
+\end{align}
+
+\noindent\textbf{Observa\c{c}\~ao:} como $\zeta = 1{,}308 > 1$, a malha fechada \'e
+\textbf{superamortecida} (polos reais $-2{,}133$ e $-9{,}867$, \emph{sem oscila\c{c}\~ao}).
+
+% -----------------------------------------------------------------------------
+\subsection{Item (b) -- Per\'iodo de amostragem e discretiza\c{c}\~ao}
+
+Por ser superamortecida, a resposta ao degrau n\~ao apresenta ciclo de oscila\c{c}\~ao
+(n\~ao existe $\omega_d$). Adota-se a frequ\^encia natural $\omega_n$ como refer\^encia,
+amostrando a 10 vezes essa frequ\^encia ($\omega_s = 10\,\omega_n$), ou seja, 10 amostras
+no per\'iodo natural $2\pi/\omega_n$:
+\begin{equation}
+T=\frac{2\pi/\omega_n}{10}=\frac{2\pi}{10\cdot 4{,}588}=0{,}13695
+\;\Rightarrow\; \boxed{\,T = 0{,}1369~\mathrm{s}\,}.
+\end{equation}
+
+\noindent Verifica\c{c}\~ao: amostras por per\'iodo $=\dfrac{2\pi/\omega_n}{T}
+=\dfrac{1{,}3695}{0{,}1369}=10{,}00 \ge 10.$
+
+\paragraph{Discretiza\c{c}\~ao de $G(s)$ por ZOH.}
+\begin{equation}
+G(z)=(1-z^{-1})\,\mathcal{Z}\!\left\{\frac{G(s)}{s}\right\},
+\qquad
+\frac{G(s)}{s}=\frac{A}{s}+\frac{B}{s-s_1}+\frac{C}{s-s_2},
+\end{equation}
+com $s_1=-2{,}0063$ e $s_2=-9{,}9937$. Res\'iduos:
+\begin{align}
+A &= \frac{1}{s_1 s_2} = 0{,}04988, &
+B &= \frac{1}{s_1(s_1-s_2)} = -0{,}06240, &
+C &= \frac{1}{s_2(s_2-s_1)} = 0{,}01253,
+\end{align}
+observando que $A+B+C=0$ (por isso o termo em $z^2$ do numerador se cancela).
+Exponenciais discretas:
+\begin{equation}
+e^{s_1 T}=e^{-0{,}2747}=0{,}7598,
+\qquad
+e^{s_2 T}=e^{-1{,}3681}=0{,}2546 .
+\end{equation}
+
+Montando $G(z)=A+B\dfrac{z-1}{z-e^{s_1T}}+C\dfrac{z-1}{z-e^{s_2T}}$:
+\begin{equation}
+\boxed{\;G(z)=\dfrac{0{,}005649\,z+0{,}003280}{z^2-1{,}0144\,z+0{,}1934}\;}.
+\end{equation}
+
+\noindent Verifica\c{c}\~ao do ganho DC: $G(1)=0{,}04988 = G(s)\big|_{s=0}$.
+
+% -----------------------------------------------------------------------------
+\subsection{Itens (c) e (d) -- Simulink}
+
+\paragraph{(c) Esquema de controle digital.} O modelo cont\'em:
+\begin{enumerate}
+  \item \textbf{Refer\^encia:} bloco \texttt{Step} (amplitude 1).
+  \item \textbf{A/D:} \texttt{Zero-Order Hold} com $T=0{,}1369~\mathrm{s}$ (amostra o erro).
+  \item \textbf{Controlador $D(z)$:} \texttt{Discrete Transfer Fcn}. Na Quest\~ao~1 ainda
+        n\~ao h\'a controlador projetado, ent\~ao usa-se $D(z)=1$ (os quatro controladores
+        s\~ao projetados na Quest\~ao~2).
+  \item \textbf{D/A:} \texttt{Zero-Order Hold} com $T=0{,}1369~\mathrm{s}$ (segura o sinal de controle).
+  \item \textbf{Planta cont\'inua:} blocos do motor -- armadura $\frac{K_m}{L_a s+R_a}$,
+        soma com $T_d$, $\frac{1}{Js+b}$ e realimenta\c{c}\~ao interna $K_b$ -- ou,
+        equivalentemente, \texttt{Transfer Fcn} $G(s)=\frac{1}{s^2+12s+20{,}05}$.
+  \item \textbf{Realimenta\c{c}\~ao unit\'aria} da velocidade $\omega$.
+  \item \textbf{Perturba\c{c}\~ao $T_d$:} bloco \texttt{Step} ativado ap\'os o regime
+        (utilizado na Quest\~ao~3).
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+% >>> Salve o print do seu modelo Simulink como simulink_modelo.png e suba no Overleaf
+\includegraphics[width=0.9\linewidth]{simulink_modelo.png}
+\caption{Modelo Simulink do controle digital: refer\^encia, A/D (ZOH), $D(z)$, D/A (ZOH),
+planta cont\'inua $G(s)$ e realimenta\c{c}\~ao unit\'aria.}
+\label{fig:simulink-modelo}
+\end{figure}
+
+\paragraph{(d) Comprova\c{c}\~ao do n\'umero de amostras.} Com um \texttt{Scope} na sa\'ida
+do D/A (degraus do ZOH), contam-se os degraus horizontais dentro de um per\'iodo natural
+$2\pi/\omega_n \approx 1{,}37~\mathrm{s}$: aparecem $\approx 10$ degraus, comprovando
+$T=0{,}1369~\mathrm{s}$. Sobrepor a resposta amostrada \`a resposta cont\'inua de $H(s)$
+torna a contagem evidente.
+
+\begin{figure}[h]
+\centering
+% >>> Salve o print do Scope (saida do D/A) como simulink_amostras.png e suba no Overleaf
+\includegraphics[width=0.85\linewidth]{simulink_amostras.png}
+\caption{Sinal amostrado (sa\'ida do D/A, degraus do ZOH) comprovando $\approx 10$ amostras
+no per\'iodo natural $2\pi/\omega_n \approx 1{,}37$~s, com $T=0{,}1369$~s.}
+\label{fig:simulink-amostras}
+\end{figure}
+
+% -----------------------------------------------------------------------------
+\paragraph{Observa\c{c}\~ao para confirmar com a professora.} O enunciado pede ``10 amostras
+por ciclo da resposta ao degrau'', mas com estes par\^ametros a malha \'e superamortecida
+(sem ciclo). Adotou-se $\omega_n$ como refer\^encia; convém confirmar se este crit\'erio \'e
+aceito ou se prefere outro (p.\,ex.\ $\ge 10$ amostras no tempo de subida/assentamento).
+
+\end{document}
