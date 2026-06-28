@@ -1,0 +1,407 @@
+% =============================================================================
+%  Laboratorio de Controle Discreto - Trabalho em equipe (Questoes 1 a 4)
+%  Grupo: Luiz E. Passoni de Souza / Victor Damasceno Oliveira
+%  Parametros: Ra=2  La=1  Km=0,05  Kb=0,05  J=0,05  b=0,5
+%
+%  DOCUMENTO UNICO E COMPLETO: cole TODO este conteudo como main.tex no Overleaf.
+%  Imagens esperadas (suba no Overleaf com estes nomes):
+%    simulink_modelo.png  simulink_amostras.png  rlocus_a.png  bode_w.png
+%    resp_degrau_q3.png   resp_perturbacao.png   resp_posicao.png
+%  Decimais com virgula usam {,} para o espacamento correto.
+% =============================================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+
+\title{Laborat\'orio de Controle Discreto -- Trabalho em equipe}
+\author{Luiz E. Passoni de Souza \and Victor Damasceno Oliveira}
+\date{}
+
+\begin{document}
+\maketitle
+
+% #############################################################################
+\section{Quest\~ao 1 -- Fun\c{c}\~ao de Transfer\^encia e Discretiza\c{c}\~ao}
+
+\begin{table}[h]
+\centering
+\caption{Par\^ametros do motor DC (grupo Passoni/Damasceno).}
+\begin{tabular}{lcc}
+\toprule
+Par\^ametro & S\'imbolo & Valor \\
+\midrule
+Resist\^encia de armadura & $R_a$ & $2~\Omega$ \\
+Indut\^ancia de armadura  & $L_a$ & $1~\mathrm{H}$ \\
+Constante de torque       & $K_m$ & $0{,}05~\mathrm{N\cdot m/A}$ \\
+Constante de FCEM         & $K_b$ & $0{,}05~\mathrm{V/(rad/s)}$ \\
+In\'ercia do rotor        & $J$   & $0{,}05~\mathrm{kg\cdot m^2}$ \\
+Atrito viscoso            & $b$   & $0{,}5~\mathrm{N\cdot m\cdot s/rad}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Item (a) -- FT de malha fechada cont\'inua}
+
+Do diagrama de blocos, a fun\c{c}\~ao de transfer\^encia direta de $V_a$ para $\omega$,
+com a malha interna da FCEM ($K_b$) fechada e $T_d = 0$, \'e:
+\begin{equation}
+G(s)=\frac{\omega(s)}{V_a(s)}=\frac{K_m}{(L_a s+R_a)(Js+b)+K_mK_b}.
+\end{equation}
+Expandindo o denominador:
+\begin{align}
+(L_a s+R_a)(Js+b) &= L_aJ\,s^2+(L_ab+R_aJ)\,s+R_ab = 0{,}05\,s^2+0{,}6\,s+1{,}0,\\
++\,K_mK_b &= 0{,}05\cdot 0{,}05 = 0{,}0025 .
+\end{align}
+Normalizando (dividindo por $0{,}05$):
+\begin{equation}
+G(s)=\frac{0{,}05}{0{,}05\,s^2+0{,}6\,s+1{,}0025}
+     =\boxed{\;\dfrac{1}{s^2+12s+20{,}05}\;}
+\qquad \text{polos: } -2{,}0063,\; -9{,}9937 .
+\end{equation}
+Fechando a malha com realimenta\c{c}\~ao unit\'aria ($T_d=0$):
+\begin{equation}
+H(s)=\frac{G(s)}{1+G(s)}=\boxed{\;\dfrac{1}{s^2+12s+21{,}05}\;}.
+\end{equation}
+An\'alise: $\omega_n=\sqrt{21{,}05}=4{,}588$~rad/s e
+$\zeta=\dfrac{12}{2\cdot 4{,}588}=1{,}308>1$. Logo a malha fechada \'e
+\textbf{superamortecida} (polos reais $-2{,}133$ e $-9{,}867$, sem oscila\c{c}\~ao).
+
+\subsection{Item (b) -- Per\'iodo de amostragem e discretiza\c{c}\~ao}
+
+Como a resposta \'e superamortecida (sem ciclo de oscila\c{c}\~ao, $\omega_d$ inexistente),
+adota-se a frequ\^encia natural $\omega_n$ como refer\^encia: 10 amostras no per\'iodo natural
+$2\pi/\omega_n$, equivalente a amostrar a $\omega_s=10\,\omega_n$:
+\begin{equation}
+T=\frac{2\pi/\omega_n}{10}=\frac{2\pi}{10\cdot 4{,}588}=0{,}13695
+\;\Rightarrow\; \boxed{\,T = 0{,}1369~\mathrm{s}\,},
+\qquad \frac{2\pi/\omega_n}{T}=10{,}00\ge 10 .
+\end{equation}
+
+\paragraph{Discretiza\c{c}\~ao de $G(s)$ por ZOH.}
+\begin{equation}
+G(z)=(1-z^{-1})\,\mathcal{Z}\!\left\{\frac{G(s)}{s}\right\},
+\qquad
+\frac{G(s)}{s}=\frac{A}{s}+\frac{B}{s-s_1}+\frac{C}{s-s_2},
+\end{equation}
+com $s_1=-2{,}0063$, $s_2=-9{,}9937$ e res\'iduos
+$A=\tfrac{1}{s_1 s_2}=0{,}04988$, $B=\tfrac{1}{s_1(s_1-s_2)}=-0{,}06240$,
+$C=\tfrac{1}{s_2(s_2-s_1)}=0{,}01253$ (note $A+B+C=0$, anulando o termo $z^2$ do numerador).
+Com $e^{s_1 T}=0{,}7598$ e $e^{s_2 T}=0{,}2546$:
+\begin{equation}
+\boxed{\;G(z)=\dfrac{0{,}005649\,z+0{,}003280}{z^2-1{,}0144\,z+0{,}1934}\;}
+\qquad \text{zero } z=-0{,}5807,\ \text{polos } z=0{,}7598,\ 0{,}2546 .
+\end{equation}
+Verifica\c{c}\~ao do ganho DC: $G(1)=0{,}04988=G(s)\big|_{s=0}$.
+
+\subsection{Itens (c) e (d) -- Simulink}
+
+\paragraph{(c) Esquema de controle digital.} Elementos do modelo:
+\begin{enumerate}
+  \item \textbf{Refer\^encia:} bloco \texttt{Step} (amplitude 1).
+  \item \textbf{A/D:} \texttt{Zero-Order Hold} com $T=0{,}1369$~s (amostra o erro).
+  \item \textbf{Controlador $D(z)$:} \texttt{Discrete Transfer Fcn}; na Quest\~ao 1, $D(z)=1$.
+  \item \textbf{D/A:} \texttt{Zero-Order Hold} com $T=0{,}1369$~s.
+  \item \textbf{Planta cont\'inua:} armadura $\frac{K_m}{L_a s+R_a}$, soma com $T_d$,
+        $\frac{1}{Js+b}$ e realimenta\c{c}\~ao interna $K_b$.
+  \item \textbf{Realimenta\c{c}\~ao unit\'aria} da velocidade $\omega$; \textbf{$T_d$}: \texttt{Step}.
+\end{enumerate}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\linewidth]{simulink_modelo.png}
+\caption{Modelo Simulink do controle digital (refer\^encia, A/D, $D(z)$, D/A, planta e realimenta\c{c}\~ao).}
+\label{fig:simulink-modelo}
+\end{figure}
+
+\paragraph{(d) Comprova\c{c}\~ao das amostras.} No \texttt{Scope} da sa\'ida do D/A (degraus do ZOH),
+contam-se $\approx 10$ degraus dentro de um per\'iodo natural $2\pi/\omega_n\approx1{,}37$~s,
+comprovando $T=0{,}1369$~s.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.85\linewidth]{simulink_amostras.png}
+\caption{Sa\'ida do D/A (degraus do ZOH): $\approx 10$ amostras no per\'iodo natural ($T=0{,}1369$~s).}
+\label{fig:simulink-amostras}
+\end{figure}
+
+% #############################################################################
+\section{Quest\~ao 2 -- Projeto dos controladores de velocidade}
+
+\subsection*{Especifica\c{c}\~oes}
+\begin{align}
+M_p\le 5\% &\;\Rightarrow\; \zeta\ge \frac{-\ln(0{,}05)}{\sqrt{\pi^2+\ln^2(0{,}05)}}=0{,}690,\\
+t_s< 2~\mathrm{s} &\;\Rightarrow\; \sigma=\zeta\omega_n=\tfrac{4}{t_s}>2~\mathrm{rad/s},\\
+e_{ss}\le 1\% \ (\text{degrau}) &\;\Rightarrow\; \text{a\c{c}\~ao integral (polo em } z=1).
+\end{align}
+
+\subsection{(a) Aloca\c{c}\~ao de polos por lugar das ra\'izes}
+
+Com integrador para $e_{ss}=0$: $D(z)=K\dfrac{z-z_c}{z-1}$. Polos dominantes desejados
+($\zeta=0{,}7$, $\sigma=3{,}8$): $\omega_n=5{,}429$, $\omega_d=3{,}877$, logo
+\begin{equation}
+z_d=e^{(-\sigma\pm j\omega_d)T}=0{,}5126\pm j0{,}3009 .
+\end{equation}
+Na planta: $|G(z_d)|=0{,}0415$, $\angle G(z_d)=-163{,}40^\circ$. \textbf{Condi\c{c}\~ao de \^angulo:}
+\begin{align}
+\angle(z_d-z_c)&=-180^\circ-\angle G(z_d)+\angle(z_d-1)=-180^\circ+163{,}40^\circ+148{,}31^\circ=131{,}72^\circ,\\
+z_c&=\mathrm{Re}(z_d)-\frac{\mathrm{Im}(z_d)}{\tan(131{,}72^\circ)}=0{,}7808 .
+\end{align}
+\textbf{Condi\c{c}\~ao de m\'odulo} $|D(z_d)G(z_d)|=1$:
+\begin{equation}
+K=\frac{|z_d-1|}{|z_d-z_c|\,|G(z_d)|}=\frac{0{,}5728}{0{,}4031\times0{,}0415}=34{,}24
+\;\Rightarrow\; \boxed{\,D(z)=34{,}24\,\dfrac{z-0{,}7808}{z-1}\,}
+\end{equation}
+O zero $z_c=0{,}7808$ quase cancela o polo lento da planta ($z=0{,}7598$).
+Resultado: $M_p=1{,}18\%$, $t_s=0{,}68$~s, $e_{ss}=0$.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.62\linewidth]{rlocus_a.png}
+\caption{Lugar das ra\'izes de $\frac{z-z_c}{z-1}G(z)$ com os polos desejados (Q2a).}
+\label{fig:rlocus-a}
+\end{figure}
+
+\subsection{(b) Resposta em frequ\^encia (transformada bilinear $w$)}
+
+Transformada bilinear $w=\dfrac{2}{T}\dfrac{z-1}{z+1}$ (inversa $z=\frac{1+wT/2}{1-wT/2}$). Os polos de
+$G(z)$ mapeiam para $w=-1{,}994$ e $w=-8{,}680$, e a amostragem ZOH cria um \textbf{zero de fase
+n\~ao-m\'inima} em $w=2/T=14{,}61$~rad/s, que limita a frequ\^encia de cruzamento a
+$\omega_{gc}<2/T$.
+
+\noindent\textbf{Estrat\'egia: PI + avan\c{c}o de fase.} O PI tem o zero posicionado para
+\textbf{cancelar o polo lento} da planta ($w=-1{,}994$), evitando um modo lento de malha fechada:
+$\tilde D_{PI}(w)=\dfrac{w+1{,}994}{w}$. Margem de fase requerida ($\zeta=0{,}7$):
+$\mathrm{MF}_{req}=\arctan\frac{2\zeta}{\sqrt{-2\zeta^2+\sqrt{1+4\zeta^4}}}=65{,}16^\circ$.
+Escolhe-se $\omega_{gc}=4{,}5$~rad/s (bem abaixo de $14{,}6$). A fase de
+$\tilde G\,\tilde D_{PI}$ em $\omega_{gc}$ vale $-129{,}85^\circ$, logo o avan\c{c}o necess\'ario
+(margem de seguran\c{c}a $10^\circ$):
+\begin{equation}
+\phi_{max}=\mathrm{MF}_{req}-(180^\circ-129{,}85^\circ)+10^\circ=25{,}01^\circ,\quad
+\alpha=\frac{1-\sin\phi_{max}}{1+\sin\phi_{max}}=0{,}4057,
+\end{equation}
+\begin{equation}
+\omega_z=\omega_{gc}\sqrt{\alpha}=2{,}866,\quad
+\omega_p=\frac{\omega_{gc}}{\sqrt{\alpha}}=7{,}065,\quad
+K_w=\frac{1}{|\tilde G\tilde D_{PI}\tilde D_{lead}|_{\omega_{gc}}}=30{,}93 .
+\end{equation}
+\begin{equation}
+\tilde D(w)=30{,}93\,\frac{(w+1{,}994)(w/2{,}866+1)}{w\,(w/7{,}065+1)}
+\;\xrightarrow{\;w=\frac{2}{T}\frac{z-1}{z+1}\;}\;
+\boxed{\,D(z)=\dfrac{69{,}85\,z^2-100{,}01\,z+35{,}66}{(z-1)(z-0{,}3481)}\,}
+\end{equation}
+Resultado: $M_p=0\%$, $t_s=1{,}64$~s, $e_{ss}=0$ --- \textbf{atende} \`as especifica\c{c}\~oes.
+(O cancelamento do polo lento pelo zero do PI \'e o que permite $t_s<2$~s, contornando a
+limita\c{c}\~ao imposta pelo zero de fase n\~ao-m\'inima.)
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\linewidth]{bode_w.png}
+\caption{Diagrama de Bode de $\tilde L(w)=\tilde D(w)\tilde G(w)$ mostrando a margem de fase obtida (Q2b).}
+\label{fig:bode-w}
+\end{figure}
+
+\subsection{(c) Controlador PID}
+
+$D(s)=K_p+\dfrac{K_i}{s}+K_d s$. Equa\c{c}\~ao caracter\'istica de malha fechada
+($1+D(s)G(s)=0$, $K_n=1$): $s^3+(12+K_d)s^2+(20{,}05+K_p)s+K_i=0$.
+Polin\^omio desejado ($\zeta=0{,}95$, $\sigma=2{,}5$, $\omega_n=2{,}632$, $p_3=5\sigma=12{,}5$):
+\begin{equation}
+(s^2+5s+6{,}925)(s+12{,}5)=s^3+17{,}5\,s^2+69{,}425\,s+86{,}565 .
+\end{equation}
+Igualando: $K_d=17{,}5-12=5{,}5$, $K_p=69{,}425-20{,}05=49{,}375$, $K_i=86{,}565$.
+Discretiza\c{c}\~ao (integral por Tustin, derivada por backward), $D(z)=\dfrac{q_2z^2+q_1z+q_0}{z^2-z}$:
+\begin{equation}
+q_2=K_p+\tfrac{K_iT}{2}+\tfrac{K_d}{T}=95{,}476,\quad
+q_1=-K_p+\tfrac{K_iT}{2}-\tfrac{2K_d}{T}=-123{,}800,\quad
+q_0=\tfrac{K_d}{T}=40{,}175 .
+\end{equation}
+\begin{equation}
+\boxed{\,D(z)=\dfrac{95{,}476\,z^2-123{,}800\,z+40{,}175}{z^2-z}\,}
+\end{equation}
+Resultado: $M_p=0{,}73\%$, $t_s=0{,}82$~s, $e_{ss}=0$. \emph{Observa\c{c}\~ao:} adotou-se um alvo
+mais conservador ($\zeta=0{,}95$, $\sigma=2{,}5$) porque o PID, projetado no cont\'inuo e
+discretizado em $T=0{,}1369$~s, amplifica o sobrepasso (com $\sigma=4$ chegaria a $M_p>60\%$).
+
+\subsection{(d) Aloca\c{c}\~ao de polos por espa\c{c}o de estados}
+
+Estados $x=[\,i_a\ \ \omega\,]^T$:
+\begin{equation}
+A_c=\begin{bmatrix}-R_a/L_a & -K_b/L_a\\ K_m/J & -b/J\end{bmatrix}
+   =\begin{bmatrix}-2 & -0{,}05\\ 1 & -10\end{bmatrix},\quad
+B_c=\begin{bmatrix}1\\0\end{bmatrix},\quad C_c=[\,0\ \ 1\,].
+\end{equation}
+Discretiza\c{c}\~ao por ZOH ($\Phi=e^{A_cT}$, $\Gamma=\int_0^T e^{A_c\tau}d\tau\,B_c$):
+\begin{equation}
+\Phi=\begin{bmatrix}0{,}7602 & -0{,}0032\\ 0{,}0633 & 0{,}2542\end{bmatrix},\quad
+\Gamma=\begin{bmatrix}0{,}1197\\ 0{,}0056\end{bmatrix}.
+\end{equation}
+Sistema aumentado com integrador ($x_i[k+1]=x_i[k]+T(r[k]-y[k])$):
+$\Phi_a=\left[\begin{smallmatrix}\Phi & 0\\ -T C_c & 1\end{smallmatrix}\right]$,
+$\Gamma_a=\left[\begin{smallmatrix}\Gamma\\0\end{smallmatrix}\right]$.
+Polos desejados em $z$ ($\zeta=0{,}7$, $\sigma=4$): $z_{1,2}=0{,}4904\pm j0{,}3065$ e
+$z_3=e^{-3\sigma T}=0{,}1934$. Pela f\'ormula de Ackermann
+$K_a=[\,0\ 0\ 1\,]\,\mathcal{C}^{-1}\,\Delta_d(\Phi_a)$:
+\begin{equation}
+\boxed{\,K_{a}=[\,K_1\ \ K_2\ \ K_i\,]=[\,5{,}119\quad 40{,}224\quad -233{,}354\,]\,}
+\end{equation}
+Como $i_a$ n\~ao \'e medido, observador de Luenberger com polos $e^{-5\sigma T}=0{,}0647$ e
+$e^{-6\sigma T}=0{,}0374$: $L=[\,7{,}945\ \ 0{,}912\,]^T$.
+Resultado: $M_p=3{,}96\%$, $t_s=1{,}23$~s, $e_{ss}=0$.
+
+\subsection*{Resumo (malha fechada $D(z)G(z)$)}
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Controlador & $M_p$ (\%) & $t_s$ (s) & $e_{ss}$ (\%) & Especifica\c{c}\~oes \\
+\midrule
+(a) Lugar das ra\'izes   & 1{,}18 & 0{,}68 & 0 & atende \\
+(b) Transformada $w$     & 0{,}00 & 1{,}64 & 0 & atende \\
+(c) PID                  & 0{,}73 & 0{,}82 & 0 & atende \\
+(d) Espa\c{c}o de estados& 3{,}96 & 1{,}23 & 0 & atende \\
+\bottomrule
+\end{tabular}
+\caption{Os quatro controladores atendem $M_p\le5\%$, $t_s<2$~s e $e_{ss}\le1\%$.}
+\end{table}
+
+% #############################################################################
+\section{Quest\~ao 3 -- An\'alise comparativa}
+
+\subsection{(a) M\'etricas: $D(z)G(z)$ vs.\ $D(z)G(s)$}
+
+A Tabela~\ref{tab:disc} traz os valores \emph{esperados} ($D(z)$ em cascata com o modelo discreto
+$G(z)$); a Tabela~\ref{tab:sim}, os valores \emph{simulados} (Simulink da Quest\~ao 1, $D(z)$ com a
+planta cont\'inua $G(s)$).
+
+\begin{table}[h]
+\centering
+\caption{Esperado --- $D(z)$ em cascata com $G(z)$ (modelo discreto).}
+\label{tab:disc}
+\begin{tabular}{lccccc}
+\toprule
+Controlador & $t_r$ (s) & $t_s$ (s) & $t_p$ (s) & $M_p$ (\%) & valor de pico \\
+\midrule
+(a) Lugar das ra\'izes   & 0{,}411 & 0{,}684 & 0{,}821 & 1{,}18 & 1{,}012 \\
+(b) Transformada $w$     & 0{,}274 & 1{,}643 & ---     & 0{,}00 & 1{,}000 \\
+(c) PID                  & 0{,}137 & 0{,}821 & 1{,}369 & 0{,}73 & 1{,}007 \\
+(d) Espa\c{c}o de estados& 0{,}411 & 1{,}232 & 0{,}958 & 3{,}96 & 1{,}040 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Simulado --- $D(z)$ em cascata com $G(s)$ (sa\'ida cont\'inua).}
+\label{tab:sim}
+\begin{tabular}{lccccc}
+\toprule
+Controlador & $t_r$ (s) & $t_s$ (s) & $t_p$ (s) & $M_p$ (\%) & valor de pico \\
+\midrule
+(a) Lugar das ra\'izes   & 0{,}433 & 0{,}652 & 0{,}856 & 1{,}25 & 1{,}012 \\
+(b) Transformada $w$     & 0{,}248 & 1{,}540 & ---     & 0{,}00 & 1{,}000 \\
+(c) PID                  & 0{,}188 & 0{,}768 & 1{,}425 & 0{,}75 & 1{,}008 \\
+(d) Espa\c{c}o de estados& 0{,}407 & 1{,}210 & 0{,}965 & 3{,}97 & 1{,}040 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{resp_degrau_q3.png}
+\caption{Respostas ao degrau dos quatro controladores ($D(z)\times G(s)$).}
+\label{fig:degrau-q3}
+\end{figure}
+
+\paragraph{Justificativa das diferen\c{c}as.} As duas tabelas \emph{coincidem nos instantes de
+amostragem} (equival\^encia ZOH); as pequenas diferen\c{c}as surgem porque:
+(i) a Tabela~\ref{tab:sim} mede o sinal \emph{cont\'inuo}, que evolui entre amostras --- por isso o
+$t_s$ simulado \'e em geral um pouco \emph{menor} (o sinal cruza a faixa de $2\%$ entre amostras) e
+o $M_p$ um pouco \emph{maior} (picos intra-amostrais); (ii) o ZOH introduz um atraso efetivo de
+$T/2$. Como $T=0{,}1369$~s \'e pequeno ($\ge10$ amostras por ciclo, conforme a Quest\~ao 1), as
+diferen\c{c}as s\~ao pequenas em todos os projetos, validando a escolha de $T$.
+
+\subsection{(b) Resposta \`a perturba\c{c}\~ao de carga}
+
+Aplica-se $T_d$ degrau unit\'ario em $t=4$~s, com a malha em regime. Como \textbf{todos} os
+controladores t\^em a\c{c}\~ao integral, todos \textbf{rejeitam a perturba\c{c}\~ao em regime}
+($\omega$ retorna \`a refer\^encia); as diferen\c{c}as est\~ao no transit\'orio
+(Tabela~\ref{tab:perturb}). O desvio \'e grande porque um $T_d$ unit\'ario \'e uma carga elevada
+para este motor (baixo $K_m$); o que importa \'e a compara\c{c}\~ao entre controladores.
+
+\begin{table}[h]
+\centering
+\caption{Resposta \`a perturba\c{c}\~ao de carga $T_d$ (degrau unit\'ario).}
+\label{tab:perturb}
+\begin{tabular}{lcc}
+\toprule
+Controlador & desvio m\'aximo $|\Delta\omega|$ & tempo de recupera\c{c}\~ao (2\%) \\
+\midrule
+(a) Lugar das ra\'izes   & 1{,}652 & 1{,}786~s \\
+(b) Transformada $w$     & 1{,}588 & 2{,}154~s \\
+(c) PID                  & 1{,}566 & 1{,}154~s \\
+(d) Espa\c{c}o de estados& 1{,}875 & 1{,}769~s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{resp_perturbacao.png}
+\caption{Resposta dos controladores \`a perturba\c{c}\~ao de carga $T_d$ em $t=4$~s.}
+\label{fig:perturb}
+\end{figure}
+
+\paragraph{Melhor controlador.} Em nossa opini\~ao, o \textbf{PID} \'e o melhor: al\'em de atender a
+todas as especifica\c{c}\~oes ($M_p=0{,}75\%$, $t_s=0{,}77$~s), tem a \textbf{melhor rejei\c{c}\~ao
+\`a perturba\c{c}\~ao} --- recupera\c{c}\~ao mais r\'apida ($1{,}15$~s) e o menor desvio entre os
+projetos r\'apidos. O \textbf{lugar das ra\'izes} \'e o segundo (mais simples e com o menor $t_s$ de
+rastreamento). O \textbf{espa\c{c}o de estados} atende, mas \'e o mais complexo (exige observador
+para $i_a$) e tem o maior desvio. A \textbf{transformada $w$} \'e a mais lenta a rejeitar a carga
+($2{,}15$~s), embora n\~ao apresente sobrepasso.
+
+% #############################################################################
+\section{Quest\~ao 4 (b\^onus) -- Controle de posi\c{c}\~ao}
+
+Para posi\c{c}\~ao, $\theta=\int\omega\,dt$, logo a planta ganha um integrador:
+\begin{equation}
+G_\theta(s)=\frac{G(s)}{s}=\frac{1}{s\,(s^2+12s+20{,}05)} .
+\end{equation}
+Como $G_\theta(s)$ j\'a possui polo na origem (\textbf{Tipo 1}), o erro ao degrau de posi\c{c}\~ao
+\'e nulo \emph{sem} integrador no controlador. Discretiza\c{c}\~ao por ZOH:
+\begin{equation}
+G_\theta(z)=\frac{0{,}00029\,z^2+0{,}00080\,z+0{,}00013}{z^3-2{,}0144\,z^2+1{,}2079\,z-0{,}1934},
+\qquad \text{polos } z=1,\ 0{,}7598,\ 0{,}2546 .
+\end{equation}
+
+\paragraph{Projeto (compensador de avan\c{c}o).} Para o menor sobrepasso, busca-se amortecimento
+elevado com um \emph{lead} $D(z)=K\dfrac{z-z_c}{z-p_c}$, com $z_c=0{,}7598$ cancelando o polo lento.
+Polo dominante desejado ($\zeta=0{,}98$, $\sigma=1{,}5$): $z_d=0{,}8137\pm j0{,}0339$.
+Na planta: $|G_\theta(z_d)|=0{,}1444$, $\angle G_\theta(z_d)=157{,}16^\circ$.
+Condi\c{c}\~ao de \^angulo ($\angle D+\angle G_\theta=180^\circ$):
+\begin{align}
+\angle(z_d-p_c)&=\angle(z_d-z_c)+\angle G_\theta(z_d)+180^\circ=32{,}23^\circ+157{,}16^\circ+180^\circ\equiv 9{,}38^\circ,\\
+p_c&=\mathrm{Re}(z_d)-\frac{\mathrm{Im}(z_d)}{\tan(9{,}38^\circ)}=0{,}6082,\qquad
+K=\frac{|z_d-p_c|}{|z_d-z_c|\,|G_\theta(z_d)|}=22{,}65 .
+\end{align}
+\begin{equation}
+\boxed{\,D(z)=22{,}65\,\dfrac{z-0{,}7598}{z-0{,}6082}\,}
+\end{equation}
+Polos de malha fechada: $0{,}8137\pm j0{,}0339$ (amortecimento muito alto), $0{,}7595$ e $0{,}2292$
+--- todos dentro do c\'irculo unit\'ario. Resultado: $M_p=0\%$, $t_s\approx3{,}8$~s, $e_{ss}=0$
+(confirmado tamb\'em na planta cont\'inua). Para resposta mais r\'apida basta aumentar $K$
+($K\approx39\Rightarrow t_s\approx2{,}6$~s) ao custo de sobrepasso desprez\'ivel ($\approx0{,}05\%$).
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{resp_posicao.png}
+\caption{Resposta ao degrau de posi\c{c}\~ao com $D(z)=22{,}65\,(z-0{,}7598)/(z-0{,}6082)$ ($M_p=0\%$).}
+\label{fig:posicao}
+\end{figure}
+
+\end{document}
