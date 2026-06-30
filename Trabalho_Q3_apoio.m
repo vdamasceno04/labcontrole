@@ -76,7 +76,7 @@ function [ts,ys]=hyb_ss(tend,Td,tdist,Phif,Gvf,Gdf,Phi,Gam,Cc,T,nf,K12,Kis,Lobs)
         for i=1:nf
             x=Phif*x+Gvf*u+Gdf*td; ys(end+1)=Cc*x; ts(end+1)=ts(end)+T/nf; %#ok<AGROW>
         end
-        xhat=Phi*xhat+Gam*u+Lobs.'*(y-Cc*xhat); xi=xi+T*(1-y);
+        xhat=Phi*xhat+Gam*u+Lobs(:)*(y-Cc*xhat); xi=xi+T*(1-y);
     end
 end
 function pr(nome,t,y)
