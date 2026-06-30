@@ -25,7 +25,8 @@ Da=tf(K*[1 -zc],[1 -1],T);
 fprintf('\n(a) LGR: zd=%.4f%+.4fi |G|=%.4f angG=%.2f zc=%.4f K=%.4f\n',real(zd),imag(zd),abs(Gzd),rad2deg(angle(Gzd)),zc,K); Da %#ok<NOPTS>
 figure('Color','w'); rlocus((tf([1 -zc],[1 -1],T))*Gz); hold on; zgrid;
 plot(real([zd conj(zd)]),imag([zd conj(zd)]),'rs','MarkerSize',9,'LineWidth',1.5);
-title('(Q2a) Lugar das raizes: (z-z_c)/(z-1) G(z)   -> salvar como rlocus_a.png');
+title('(Q2a) Lugar das raizes: (z-z_c)/(z-1) G(z)');
+print(gcf,'rlocus_a.png','-dpng','-r150');   % salva automaticamente
 
 %% ===== (b) TRANSFORMADA w : PI (cancela polo lento) + AVANCO =====
 Gw = d2c(Gz,'tustin');                 % planta no plano w
@@ -42,7 +43,8 @@ Dw=Kw*Dpi*Dlead;  Db=c2d(Dw,T,'tustin');
 fprintf('\n(b) W: zi(cancela polo lento)=%.4f wgc=%.2f PMreq=%.2f faseG*PI=%.2f phimax=%.2f alpha=%.4f wz=%.4f wp=%.4f Kw=%.4f\n',...
         zi,wgc,PMreq,faseGPI,phimax,alpha,wz,wp,Kw); Db %#ok<NOPTS>
 figure('Color','w'); margin(Dw*Gw); grid on;
-title('(Q2b) Bode de L(w)=D(w)G(w) [margem de fase]  -> salvar como bode_w.png');
+title('(Q2b) Bode de L(w)=D(w)G(w) [margem de fase]');
+print(gcf,'bode_w.png','-dpng','-r150');   % salva automaticamente
 
 %% ===== (c) PID =====
 zeta=0.95; sigma=2.5; p3=5*sigma; wn=sigma/zeta;

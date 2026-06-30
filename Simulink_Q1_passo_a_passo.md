@@ -102,10 +102,35 @@ Período natural `2π/ωn = 1.3695 s`, `T = 0.1369 s` → devem caber **~10 amos
 
 ## 7. Prints para o relatório (.tex)
 
-Salvar os dois screenshots **com estes nomes exatos** e subir no Overleaf (o `Trabalho_Q1.tex` já tem os `\includegraphics` esperando por eles):
+Salvar os dois screenshots **com estes nomes exatos** e subir no Overleaf (o `Trabalho_completo.tex` já tem os `\includegraphics` esperando por eles):
 
 - **`simulink_modelo.png`** → print do diagrama completo (item c)
 - **`simulink_amostras.png`** → print do Scope com a contagem dos degraus (item d)
+
+---
+
+## 8. Usando o mesmo modelo na Questão 3
+
+Trocar o bloco `D(z)=1` por cada controlador (`Discrete Transfer Fcn`, *Sample time* = `0.1369`),
+rodar o degrau e anotar Tr/Ts/Tp/Mp (devem bater com a Tabela 2 do `.tex`):
+
+| Controlador | Numerator | Denominator |
+|---|---|---|
+| (a) Lugar das raízes | `[34.2409 -26.7353]` | `[1 -1]` |
+| (b) Transformada w   | `[69.8477 -100.0074 35.6626]` | `[1 -1.3481 0.3481]` |
+| (c) PID              | `[95.476 -123.800 40.175]` | `[1 -1 0]` |
+| (d) Espaço de estados | *não é função de transferência* (observador + ganhos) | — |
+
+- O controlador **(d)** não cabe num `Discrete Transfer Fcn`. Os valores dele já estão validados
+  no script `Trabalho_Q3_apoio.m` (use os de lá, ou implemente o observador com um bloco
+  `Discrete State-Space` se quiser montar no Simulink).
+- **Perturbação de carga (Q3b):** no bloco `Step` do `Td`, ponha *Final value* = `1` e
+  *Step time* = `4` (com a malha já em regime). Observe a queda e a recuperação de ω.
+
+> **Atalho:** o script `Trabalho_Q3_apoio.m` já reproduz exatamente esta simulação híbrida
+> (D(z) × G(s)) para os 4 controladores e gera os gráficos `resp_degrau_q3.png` e
+> `resp_perturbacao.png` automaticamente. O Simulink serve para o print do modelo e a
+> comprovação visual.
 
 ---
 

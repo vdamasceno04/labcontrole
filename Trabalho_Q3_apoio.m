@@ -39,7 +39,8 @@ figure('Color','w'); hold on; grid on;
 [t,y]=hyb_ss(8,0,1e9,Phif,Gvf,Gdf,Phi,Gam,Cc,T,nf,K12,Kis,Lobs); plot(t,y,'LineWidth',1.2); pr(nome{4},t,y);
 yline(1.05,'k--'); yline(1,'k:');
 legend(nome,'Location','SouthEast'); xlabel('t [s]'); ylabel('\omega(t)');
-title('Q3a - resposta ao degrau (D(z) \times G(s))  -> salvar como resp_degrau_q3.png');
+title('Q3a - resposta ao degrau (D(z) \times G(s))');
+print(gcf,'resp_degrau_q3.png','-dpng','-r150');   % salva automaticamente
 
 %% ---- Perturbacao de carga Td = degrau unitario em t=4s ----
 fprintf('\n===== Perturbacao Td=1 em t=4s =====\n');
@@ -50,7 +51,8 @@ figure('Color','w'); hold on; grid on; td0=4;
 [t,y]=hyb_tf(Pnum, Pden, 10,1,td0,Phif,Gvf,Gdf,Cc,T,nf); plot(t,y,'LineWidth',1.2); prd(nome{3},t,y,td0);
 [t,y]=hyb_ss(10,1,td0,Phif,Gvf,Gdf,Phi,Gam,Cc,T,nf,K12,Kis,Lobs); plot(t,y,'LineWidth',1.2); prd(nome{4},t,y,td0);
 legend(nome,'Location','SouthEast'); xlabel('t [s]'); ylabel('\omega(t)');
-title('Q3b - rejeicao da perturbacao de carga T_d  -> salvar como resp_perturbacao.png');
+title('Q3b - rejeicao da perturbacao de carga T_d');
+print(gcf,'resp_perturbacao.png','-dpng','-r150');   % salva automaticamente
 
 %% ===================== funcoes locais =====================
 function [ts,ys]=hyb_tf(num,den,tend,Td,tdist,Phif,Gvf,Gdf,Cc,T,nf)

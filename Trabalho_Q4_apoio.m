@@ -57,4 +57,5 @@ title('(Q4) Lugar das raizes: (z-z_c)/(z-p_c) G_\theta(z)');
 figure('Color','w'); step(CL,8); grid on; hold on; plot(ts,ys,'--','LineWidth',1.2);
 legend('D(z)G_\theta(z) (discreto)','D(z)G_\theta(s) (continuo)','Location','SouthEast');
 xlabel('t [s]'); ylabel('\theta');
-title('Q4 - resposta ao degrau de posicao (M_p=0%)  -> salvar como resp_posicao.png');
+title('Q4 - resposta ao degrau de posicao (M_p=0%)');
+print(gcf,'resp_posicao.png','-dpng','-r150');   % salva automaticamente
